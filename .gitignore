@@ -3,3 +3,4 @@
 fonts
 .spaceignore
 .view.py
+__pycache__
