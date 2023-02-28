@@ -5,7 +5,7 @@ from random import randint
 from time import time
 from typing import Optional
 
-from fastapi import FastAPI, status, Path
+from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
 from utils import *
