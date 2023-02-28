@@ -1,7 +1,7 @@
 import traceback
+import uuid
 from os import listdir
 from os.path import getsize
-from random import randint
 from time import time
 from typing import Optional
 
@@ -31,9 +31,9 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
             content={"msg": "Please specify a valid color."},
         )
 
-    id = randint(0, 9999)
-    svg_path = f"/tmp/{id}.svg"
-    export_path = f"/tmp/{id}.{filetype}"
+    uuid = uuid.uuid4()
+    svg_path = f"/tmp/{uuid}.svg"
+    export_path = f"/tmp/{uuid}.{filetype}"
     generate_color_svg(size=[width, height], color=color, out=svg_path)
 
     if filetype == "pdf":
