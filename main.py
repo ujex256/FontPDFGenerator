@@ -80,9 +80,9 @@ def _generate_font_pdf(
             content={"msg": "Download failed.", "status_code": font_path[6:]},
         )
 
-    id = randint(0, 9999)
-    svg_path = f"/tmp/{id}.svg"
-    export_path = f"/tmp/{id}.{filetype}"
+    uuid = uuid.uuid4()
+    svg_path = f"/tmp/{uuid}.svg"
+    export_path = f"/tmp/{uuid}.{filetype}"
     generate_font_svg(font_path, text, 32, svg_path, color)
 
     try:
