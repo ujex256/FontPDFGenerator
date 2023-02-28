@@ -31,9 +31,9 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
             content={"msg": "Please specify a valid color."},
         )
 
-    uuid = uuid.uuid4()
-    svg_path = f"/tmp/{uuid}.svg"
-    export_path = f"/tmp/{uuid}.{filetype}"
+    file_name = uuid.uuid4()
+    svg_path = f"/tmp/{file_name}.svg"
+    export_path = f"/tmp/{file_name}.{filetype}"
     generate_color_svg(size=[width, height], color=color, out=svg_path)
 
     if filetype == "pdf":
@@ -80,9 +80,9 @@ def _generate_font_pdf(
             content={"msg": "Download failed.", "status_code": font_path[6:]},
         )
 
-    uuid = uuid.uuid4()
-    svg_path = f"/tmp/{uuid}.svg"
-    export_path = f"/tmp/{uuid}.{filetype}"
+    file_name = uuid.uuid4()
+    svg_path = f"/tmp/{file_name}.svg"
+    export_path = f"/tmp/{file_name}.{filetype}"
     generate_font_svg(font_path, text, 32, svg_path, color)
 
     try:
