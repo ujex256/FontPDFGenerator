@@ -7,3 +7,4 @@ micros:
     primary: true
     public_routes:
       - "/*"
+    dev: uvicorn main:app

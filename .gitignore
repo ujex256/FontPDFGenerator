@@ -4,3 +4,4 @@ fonts
 .spaceignore
 .view.py
 __pycache__
+env/
