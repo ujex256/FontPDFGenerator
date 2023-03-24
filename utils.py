@@ -54,7 +54,7 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
                 try:
                     return [str(i) for i in assets if weight in i.name.lower()][0]
                 except:
-                    return "error:ないんですけど()"
+                    return "error:指定されたサイズが存在しない"
         else:
             return str(assets[0])
 
@@ -78,7 +78,7 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
         # ディレクトリからファイルのパスを選ぶ
         candidates = list(unzipped_dir.rglob("*.[ot]tf"))
         if not candidates:
-            return "error:ファッ!?"  # そもそもフォントがない
+            return "error:ダウンロードしたzipにフォントが存在しない"  # そもそもフォントがない
         levels = [str(i).count(sep) for i in candidates]
         top_level = min(levels)
         top_level_files = [candidates[i] for i, l in enumerate(levels) if l == top_level]
