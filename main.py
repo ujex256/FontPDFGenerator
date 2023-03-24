@@ -18,7 +18,7 @@ app = FastAPI()
 def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
     start = time()
     filetype = filetype.lower()
-    responce = {
+    response = {
         "color": color,
         "size": f"{width}x{height}",
         "filesize": 0,
@@ -40,10 +40,10 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
         svg2pdf(svg_path, export_path)
     elif filetype == "png":
         svg2png(svg_path, export_path, 50)
-    responce["base64"] = get_base64(export_path)
-    responce["filesize"] = getsize(export_path)
-    responce["time"] = time() - start
-    return responce
+    response["base64"] = get_base64(export_path)
+    response["filesize"] = getsize(export_path)
+    response["time"] = time() - start
+    return response
 
 
 @app.get("/font/{filetype}", status_code=status.HTTP_200_OK)
@@ -57,7 +57,7 @@ def _generate_font_pdf(
     dpi: int = 72,
 ):
     start = time()
-    responce = {
+    response = {
         "font": fontname,
         "base64": "",
         "color": color,
@@ -68,11 +68,11 @@ def _generate_font_pdf(
 
     font_path = download_font(fontname, iszip, weight)
     if isinstance(font_path, dict):
-        responce["dl_time"] = font_path["download_time"]
+        response["dl_time"] = font_path["download_time"]
         font_path = font_path["path"]
     if isinstance(font_path, list):
-        responce["weight_list"] = font_path
-        responce["selected_weight"] = font_path[0]
+        response["weight_list"] = font_path
+        response["selected_weight"] = font_path[0]
         font_path = font_path[0]
     if "error" in font_path:
         return JSONResponse(
@@ -95,10 +95,10 @@ def _generate_font_pdf(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"msg": traceback.format_exception_only((type(e), e))[0][:-2]},
         )
-    responce["base64"] = get_base64(export_path)
-    responce["filesize"] = getsize(export_path)
-    responce["time"] = time() - start
-    return responce
+    response["base64"] = get_base64(export_path)
+    response["filesize"] = getsize(export_path)
+    response["time"] = time() - start
+    return response
 
 
 @app.get("/debug/ls")
