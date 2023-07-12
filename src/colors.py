@@ -1,3 +1,6 @@
+import re
+
+
 # https://github.com/matplotlib/matplotlib/blob/main/lib/matplotlib/_color_data.py#L992
 CSS_COLORS = [
     "aliceblue",
@@ -149,3 +152,9 @@ CSS_COLORS = [
     "yellow",
     "yellowgreen",
 ]
+
+
+def is_color(code: str) -> bool:
+    is_css_col = code.lower() in CSS_COLORS
+    is_color_code = bool(re.match(r"/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/", code))
+    return is_css_col or is_color_code

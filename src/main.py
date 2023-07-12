@@ -9,7 +9,9 @@ from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
 import utils
-from colors import CSS_COLORS
+import im_conv
+import colors
+
 
 app = FastAPI()
 
@@ -25,7 +27,7 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
         "base64": "",
         "time": 0,
     }
-    if (color.lower() not in CSS_COLORS) and ("#" not in color):
+    if not colors.is_color(color):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"msg": "Please specify a valid color."},
@@ -87,9 +89,9 @@ def _generate_font_pdf(
 
     try:
         if filetype == "pdf":
-            utils.svg2pdf(svg_path, export_path)
+            im_conv.svg2pdf(svg_path, export_path)
         elif filetype == "png":
-            utils.svg2png(svg_path, export_path, dpi)
+            im_conv.svg2png(svg_path, export_path, dpi)
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
