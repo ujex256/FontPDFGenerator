@@ -42,7 +42,7 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
         response = requests.get(url)
     else:
         response = requests.get(f"https://fonts.google.com/download?family={url}")
-    if not (response.status_code >= 200 and response.status_code < 300):
+    if not response.ok:
         return f"error:{response.status_code}"
     result["download_time"] = response.elapsed.total_seconds()
 
