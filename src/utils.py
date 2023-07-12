@@ -35,31 +35,8 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
     }
     if weight is not None:
         weight = weight.lower()
-    # fontsフォルダに元々入っているならダウンロードしない
-    if "http" in url and "://" in url:
-        _url = url.split("?")[0]
-        _url = _url.replace(".zip", "").split("/")
-        KEYS = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"]
-        d = dict.fromkeys(KEYS, None)
-        d = str.maketrans(d)
-        _url = (_url[-2] + _url[-1]).translate(d)
-        font_assets_dir = pathlib.Path(f"fonts/{_url}")
-    else:
-        font_assets_dir = pathlib.Path(f"fonts/{url.replace(' ', '-')}")
-    if font_assets_dir.exists():
-        assets = list(font_assets_dir.iterdir())
-        if len(assets) > 1:
-            if weight is None:
-                return [str(i) for i in assets]
-            else:
-                try:
-                    return [str(i) for i in assets if weight in i.name.lower()][0]
-                except IndexError:
-                    return "error:指定されたサイズが存在しない"
-        else:
-            return str(assets[0])
 
-    # なかったらダウンロード
+    # ダウンロード
     filename = str(uuid.uuid4())
     if "http" in url and "://" in url:
         response = requests.get(url)
@@ -146,6 +123,7 @@ def generate_font_svg(
         g_list.append(content)
         text_x += width
         x = text_x * scale
+
     font.close()
     result = dedent(
         f"""
