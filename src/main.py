@@ -9,6 +9,7 @@ from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
 import utils
+import expressions as exp
 import im_conv
 import colors
 
@@ -68,7 +69,22 @@ def _generate_font_pdf(
     }
     filetype = filetype.lower()
 
-    font_path = utils.download_font(fontname, iszip, weight)
+    try:
+        id = None
+        font_path = utils.download_font(fontname, iszip, weight)
+    except exp.DownloadFailed:
+        msg = "Download failed."
+        id = "DOWNLOAD_FAILED"
+    except exp.FontNotFoundError:
+        msg = "Font is not found."
+        id = "FONT_NOT_FOUND"
+    except exp.WeightNotFoundError:
+        msg = "Weight is no found."
+        id = "WEIGHT_NOT_FOUND"
+    finally:
+        if id is not None:
+            return JSONResponse({"msg": msg, "id": id}, status.HTTP_400_BAD_REQUEST)
+
     if isinstance(font_path, dict):
         response["dl_time"] = font_path["download_time"]
         font_path = font_path["path"]
@@ -76,11 +92,7 @@ def _generate_font_pdf(
         response["weight_list"] = font_path
         response["selected_weight"] = font_path[0]
         font_path = font_path[0]
-    if "error" in font_path:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"msg": "Download failed.", "status_code": font_path[6:]},
-        )
+
 
     file_name = uuid.uuid4()
     svg_path = f"/tmp/{file_name}.svg"

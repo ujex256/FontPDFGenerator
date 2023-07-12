@@ -8,6 +8,7 @@ from textwrap import dedent
 from typing import Optional
 
 import requests
+import expressions
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.ttLib import TTFont
 
@@ -43,7 +44,8 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
     else:
         resp = requests.get(f"https://fonts.google.com/download?family={url}")
     if not resp.ok:
-        return f"error:{resp.status_code}"
+        raise expressions.DownloadFailed("download failed.",
+                                         status_code=resp.status_code)
     result["download_time"] = resp.elapsed.total_seconds()
 
     if zip:
@@ -56,7 +58,8 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
         # ディレクトリからファイルのパスを選ぶ
         candidates = list(unzipped_dir.rglob("*.[ot]tf"))
         if not candidates:
-            return "error:ダウンロードしたzipにフォントが存在しない"  # そもそもフォントがない
+            raise expressions.FontNotFoundError("Font not found")
+
         levels = [str(i).count(sep) for i in candidates]
         top_level = min(levels)
         top_level_files = [candidates[i] for i, l in enumerate(levels) if l == top_level]
