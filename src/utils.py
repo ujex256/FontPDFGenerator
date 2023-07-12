@@ -22,16 +22,18 @@ def generate_color_svg(size: list, color: str, out: str) -> None:
     with open(out, "w", encoding="utf8") as file:
         file.write(base_svg)
 
+
 def get_base64(path: str):
     with open(path, "rb") as file:
         return base64.b64encode(file.read())
+
 
 def download_font(url: str, zip: bool, weight: Optional[str] = None):
     result = {
         "path": "",
         "download_time": 0
     }
-    if not weight is None:
+    if weight is not None:
         weight = weight.lower()
     # fontsフォルダに元々入っているならダウンロードしない
     if "http" in url and "://" in url:
@@ -52,7 +54,7 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
             else:
                 try:
                     return [str(i) for i in assets if weight in i.name.lower()][0]
-                except:
+                except IndexError:
                     return "error:指定されたサイズが存在しない"
         else:
             return str(assets[0])
@@ -101,9 +103,15 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
         result["path"] = f"/tmp/{filename}.ttf"
     return result
 
+
 def generate_font_svg(
-        fontpath: str, text: str, size: int, out: str, color: str = "black"
-    ) -> None:
+    fontpath: str,
+    text: str,
+    size: int,
+    out: str,
+    color: str = "black"
+) -> None:
+
     font = TTFont(fontpath)
     glyph_set = font.getGlyphSet()
     cmap = font.getBestCmap()
@@ -116,7 +124,7 @@ def generate_font_svg(
     def get_glyph(glyph_set, cmap, char):
         try:
             glyph_name = cmap[ord(char)]
-        except:
+        except KeyError:
             glyph_name = cmap[33]
         return glyph_set[glyph_name]
 
@@ -149,7 +157,6 @@ def generate_font_svg(
         f.write(result)
 
 
-
 def return_replace(url):
     """デバッグ用"""
     url = url.split("?")[0]
@@ -159,6 +166,7 @@ def return_replace(url):
     d = str.maketrans(d)
     url = (url[-2] + url[-1]).translate(d)
     return url
+
 
 if __name__ == "__main__":
     import time
