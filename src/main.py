@@ -8,7 +8,7 @@ from typing import Optional
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
-from utils import *
+import utils
 from colors import CSS_COLORS
 
 app = FastAPI()
@@ -34,13 +34,13 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
     file_name = uuid.uuid4()
     svg_path = f"/tmp/{file_name}.svg"
     export_path = f"/tmp/{file_name}.{filetype}"
-    generate_color_svg(size=[width, height], color=color, out=svg_path)
+    utils.generate_color_svg(size=[width, height], color=color, out=svg_path)
 
     if filetype == "pdf":
-        svg2pdf(svg_path, export_path)
+        utils.svg2pdf(svg_path, export_path)
     elif filetype == "png":
-        svg2png(svg_path, export_path, 50)
-    response["base64"] = get_base64(export_path)
+        utils.svg2png(svg_path, export_path, 50)
+    response["base64"] = utils.get_base64(export_path)
     response["filesize"] = getsize(export_path)
     response["time"] = time() - start
     return response
@@ -66,7 +66,7 @@ def _generate_font_pdf(
     }
     filetype = filetype.lower()
 
-    font_path = download_font(fontname, iszip, weight)
+    font_path = utils.download_font(fontname, iszip, weight)
     if isinstance(font_path, dict):
         response["dl_time"] = font_path["download_time"]
         font_path = font_path["path"]
@@ -83,19 +83,19 @@ def _generate_font_pdf(
     file_name = uuid.uuid4()
     svg_path = f"/tmp/{file_name}.svg"
     export_path = f"/tmp/{file_name}.{filetype}"
-    generate_font_svg(font_path, text, 32, svg_path, color)
+    utils.generate_font_svg(font_path, text, 32, svg_path, color)
 
     try:
         if filetype == "pdf":
-            svg2pdf(svg_path, export_path)
+            utils.svg2pdf(svg_path, export_path)
         elif filetype == "png":
-            svg2png(svg_path, export_path, dpi)
+            utils.svg2png(svg_path, export_path, dpi)
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"msg": traceback.format_exception_only((type(e), e))[0][:-2]},
         )
-    response["base64"] = get_base64(export_path)
+    response["base64"] = utils.get_base64(export_path)
     response["filesize"] = getsize(export_path)
     response["time"] = time() - start
     return response
