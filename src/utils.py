@@ -10,7 +10,6 @@ from typing import Optional
 import requests
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.ttLib import TTFont
-from svglib.svglib import svg2rlg
 
 
 def generate_color_svg(size: list, color: str, out: str) -> None:
@@ -149,15 +148,7 @@ def generate_font_svg(
     with open(out, "w") as f:
         f.write(result)
 
-def svg2pdf(filepath: str, out: str) -> None:
-    from reportlab.graphics import renderPDF
-    draw_data = svg2rlg(filepath)
-    renderPDF.drawToFile(draw_data, out)
 
-def svg2png(filepath: str, out: str, dpi: int) -> None:
-    from reportlab.graphics import renderPM
-    draw_data = svg2rlg(filepath)
-    renderPM.drawToFile(draw_data, out, fmt="PNG", dpi=dpi)
 
 def return_replace(url):
     """デバッグ用"""
