@@ -70,7 +70,7 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
                 filtered_path = [i for i in top_level_files if weight in i.name.lower()]
                 x = len(filtered_path)
                 if x == 0:
-                    result["path"] = "error:ないんですけど()"
+                    result["path"] = expressions.WeightNotFoundError()
                 elif x == 1:
                     result["path"] = str(filtered_path[0])
                 else:
