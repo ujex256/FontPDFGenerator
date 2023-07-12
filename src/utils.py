@@ -39,17 +39,17 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
     # ダウンロード
     filename = str(uuid.uuid4())
     if "http" in url and "://" in url:
-        response = requests.get(url)
+        resp = requests.get(url)
     else:
-        response = requests.get(f"https://fonts.google.com/download?family={url}")
-    if not response.ok:
-        return f"error:{response.status_code}"
-    result["download_time"] = response.elapsed.total_seconds()
+        resp = requests.get(f"https://fonts.google.com/download?family={url}")
+    if not resp.ok:
+        return f"error:{resp.status_code}"
+    result["download_time"] = resp.elapsed.total_seconds()
 
     if zip:
         # zipの展開
         with open(f"/tmp/{filename}.zip", "wb") as f:
-            f.write(response.content)
+            f.write(resp.content)
         unzipped_dir = pathlib.Path("/tmp", filename)
         shutil.unpack_archive(f"/tmp/{filename}.zip", str(unzipped_dir), "zip")
 
@@ -76,7 +76,7 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
             result["path"] = str(top_level_files[0])
     else:
         with open(f"/tmp/{filename}.ttf", "wb") as f:
-            f.write(response.content)
+            f.write(resp.content)
         result["path"] = f"/tmp/{filename}.ttf"
     return result
 
