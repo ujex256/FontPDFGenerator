@@ -100,8 +100,8 @@ def _generate_font_pdf(
         if id is not None:
             return JSONResponse({"msg": msg, "id": id}, status.HTTP_400_BAD_REQUEST)
 
+    dl_time = font_path["download_time"]
     if isinstance(font_path, dict):
-        response["dl_time"] = font_path["download_time"]
         font_path = font_path["path"]
     if isinstance(font_path, list):
         response["weight_list"] = font_path
@@ -125,7 +125,7 @@ def _generate_font_pdf(
         )
     return FontPDFResponse(font_url=fontname, weight=weight,
                            base64=utils.get_base64(export_path),
-                           color=color, dl_time=font_path)
+                           color=color, dl_time=dl_time)
 
 
 @app.get("/debug/ls")
