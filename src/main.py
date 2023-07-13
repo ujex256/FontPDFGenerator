@@ -97,7 +97,6 @@ def _generate_font_pdf(
         response["selected_weight"] = font_path[0]
         font_path = font_path[0]
 
-
     file_name = uuid.uuid4()
     svg_path = f"/tmp/{file_name}.svg"
     export_path = f"/tmp/{file_name}.{filetype}"
@@ -113,7 +112,8 @@ def _generate_font_pdf(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"msg": traceback.format_exception_only((type(e), e))[0][:-2]},
         )
-    return FontPDFResponse(font_url=fontname, weight=weight, base64=utils.get_base64(export_path),
+    return FontPDFResponse(font_url=fontname, weight=weight,
+                           base64=utils.get_base64(export_path),
                            color=color, dl_time=font_path)
 
 
@@ -122,7 +122,7 @@ def _generate_font_pdf(
 def _file_tree(path: str = "."):
     try:
         return {"result": listdir(path)}
-    except:
+    except FileNotFoundError:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"msg": "path is not found."},
