@@ -7,6 +7,7 @@ from typing import Optional
 
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 
 import utils
 import expressions as exp
@@ -17,17 +18,23 @@ import colors
 app = FastAPI()
 
 
+class ColorPDFResponse(BaseModel):
+    color: str
+    base64: str
+    size: int
+
+
+class FontPDFResponse(BaseModel):
+    font_url: str
+    weight: str = None
+    base64: str
+    color: str
+    dl_time: float
+
+
 @app.get("/color/{filetype}", status_code=status.HTTP_200_OK)
 def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
-    start = time()
     filetype = filetype.lower()
-    response = {
-        "color": color,
-        "size": f"{width}x{height}",
-        "filesize": 0,
-        "base64": "",
-        "time": 0,
-    }
     if not colors.is_color(color):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -43,10 +50,8 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
         utils.svg2pdf(svg_path, export_path)
     elif filetype == "png":
         utils.svg2png(svg_path, export_path, 50)
-    response["base64"] = utils.get_base64(export_path)
-    response["filesize"] = getsize(export_path)
-    response["time"] = time() - start
-    return response
+    return ColorPDFResponse(color=color, base64=utils.get_base64(export_path),
+                            size=getsize(export_path))
 
 
 @app.get("/font/{filetype}", status_code=status.HTTP_200_OK)
@@ -59,7 +64,6 @@ def _generate_font_pdf(
     weight: Optional[str] = None,
     dpi: int = 72,
 ):
-    start = time()
     response = {
         "font": fontname,
         "base64": "",
@@ -109,10 +113,8 @@ def _generate_font_pdf(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"msg": traceback.format_exception_only((type(e), e))[0][:-2]},
         )
-    response["base64"] = utils.get_base64(export_path)
-    response["filesize"] = getsize(export_path)
-    response["time"] = time() - start
-    return response
+    return FontPDFResponse(font_url=fontname, weight=weight, base64=utils.get_base64(export_path),
+                           color=color, dl_time=font_path)
 
 
 @app.get("/debug/ls")
