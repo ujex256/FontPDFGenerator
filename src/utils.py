@@ -60,21 +60,16 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
         if not candidates:
             raise expressions.FontNotFoundError("Font not found")
 
+        if weight is not None:
+            candidates = [i for i in candidates if weight in i.name.lower()]
+            if len(candidates) == 0:
+                raise expressions.WeightNotFoundError("weight not found.")
+
         levels = [str(i).count(sep) for i in candidates]
         top_level = min(levels)
         top_level_files = [candidates[i] for i, l in enumerate(levels) if l == top_level]
         if len(top_level_files) > 1:
-            if weight is None:
-                result["path"] = list(map(str, top_level_files))
-            else:
-                filtered_path = [i for i in top_level_files if weight in i.name.lower()]
-                x = len(filtered_path)
-                if x == 0:
-                    result["path"] = expressions.WeightNotFoundError()
-                elif x == 1:
-                    result["path"] = str(filtered_path[0])
-                else:
-                    result["path"] = list(map(str, filtered_path))
+            result["path"] = list(map(str, top_level_files))
         else:
             result["path"] = str(top_level_files[0])
     else:
