@@ -1,8 +1,8 @@
 import traceback
 import uuid
+import time
 from os import listdir
 from os.path import getsize
-from time import time
 from typing import Optional
 
 from fastapi import FastAPI, status
@@ -30,6 +30,15 @@ class FontPDFResponse(BaseModel):
     base64: str
     color: str
     dl_time: float
+
+
+@app.middleware("http")
+async def add_process_time(req, call_next):
+    s = time.perf_counter()
+    resp = await call_next(req)
+    process = time.time() - s
+    resp.headers["X-Process-Time"] = process
+    return resp
 
 
 @app.get("/color/{filetype}", status_code=status.HTTP_200_OK)
