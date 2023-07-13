@@ -2,6 +2,7 @@ import base64
 import pathlib
 import shutil
 import uuid
+import re
 from collections import deque
 from os import sep
 from textwrap import dedent
@@ -39,10 +40,10 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
 
     # ダウンロード
     filename = str(uuid.uuid4())
-    if "http" in url and "://" in url:
+    if is_url(filename):
         resp = requests.get(url)
     else:
-        resp = requests.get(f"https://fonts.google.com/download?family={url}")
+        expressions.DownloadFailed("invaild url")
     if not resp.ok:
         raise expressions.DownloadFailed("download failed.",
                                          status_code=resp.status_code)
@@ -131,6 +132,10 @@ def generate_font_svg(
     )
     with open(out, "w") as f:
         f.write(result)
+
+
+def is_url(d: str) -> bool:
+    return bool(re.match(r"https?://[\w!?/+\-_~;.,*&@#$%()'[\]]+", d))
 
 
 def return_replace(url):

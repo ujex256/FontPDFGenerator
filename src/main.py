@@ -72,6 +72,8 @@ def _generate_font_pdf(
         "dl_time": None,
     }
     filetype = filetype.lower()
+    if not utils.is_url(fontname):
+        fontname = f"https://fonts.google.com/download?family={fontname}"
 
     try:
         id = None
