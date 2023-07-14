@@ -26,7 +26,7 @@ class ColorPDFResponse(BaseModel):
 
 class FontPDFResponse(BaseModel):
     font_url: str
-    weight: str = None
+    weight: str | None = None
     base64: str
     color: str
     dl_time: float
@@ -35,9 +35,12 @@ class FontPDFResponse(BaseModel):
 @app.middleware("http")
 async def add_process_time(req, call_next):
     s = time.perf_counter()
-    resp = await call_next(req)
-    process = time.time() - s
-    resp.headers["X-Process-Time"] = process
+    try:
+        resp = await call_next(req)
+    except Exception as e:
+        raise e
+    process = time.perf_counter() - s
+    resp.headers["X-Process-Time"] = str(process)
     return resp
 
 
@@ -56,9 +59,9 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
     utils.generate_color_svg(size=[width, height], color=color, out=svg_path)
 
     if filetype == "pdf":
-        utils.svg2pdf(svg_path, export_path)
+        im_conv.svg2pdf(svg_path, export_path)
     elif filetype == "png":
-        utils.svg2png(svg_path, export_path, 50)
+        im_conv.svg2png(svg_path, export_path, 50)
     return ColorPDFResponse(color=color, base64=utils.get_base64(export_path),
                             size=getsize(export_path))
 
@@ -69,7 +72,7 @@ def _generate_font_pdf(
     fontname: str,
     text: str,
     color: str = "black",
-    iszip: bool = True,
+    bg_color: str = "white",
     weight: Optional[str] = None,
     dpi: int = 72,
 ):
@@ -86,7 +89,7 @@ def _generate_font_pdf(
 
     try:
         id = None
-        font_path = utils.download_font(fontname, iszip, weight)
+        font_path = utils.download_font(fontname, weight)
     except exp.DownloadFailed:
         msg = "Download failed."
         id = "DOWNLOAD_FAILED"
@@ -111,7 +114,7 @@ def _generate_font_pdf(
     file_name = uuid.uuid4()
     svg_path = f"/tmp/{file_name}.svg"
     export_path = f"/tmp/{file_name}.{filetype}"
-    utils.generate_font_svg(font_path, text, 32, svg_path, color)
+    utils.generate_font_svg(font_path, text, 32, svg_path, color, bg_color=bg_color)
 
     try:
         if filetype == "pdf":
@@ -119,6 +122,7 @@ def _generate_font_pdf(
         elif filetype == "png":
             im_conv.svg2png(svg_path, export_path, dpi)
     except Exception as e:
+        raise e
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"msg": traceback.format_exception_only((type(e), e))[0][:-2]},
@@ -138,3 +142,8 @@ def _file_tree(path: str = "."):
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"msg": "path is not found."},
         )
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", port=8000, reload=True)

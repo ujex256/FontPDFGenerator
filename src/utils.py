@@ -30,7 +30,7 @@ def get_base64(path: str):
         return base64.b64encode(file.read())
 
 
-def download_font(url: str, zip: bool, weight: Optional[str] = None):
+def download_font(url: str, weight: Optional[str] = None):
     result = {
         "path": "",
         "download_time": 0
@@ -40,16 +40,16 @@ def download_font(url: str, zip: bool, weight: Optional[str] = None):
 
     # ダウンロード
     filename = str(uuid.uuid4())
-    if is_url(filename):
+    if is_url(url):
         resp = requests.get(url)
     else:
-        expressions.DownloadFailed("invaild url")
+        raise expressions.DownloadFailed("invaild url")
     if not resp.ok:
         raise expressions.DownloadFailed("download failed.",
                                          status_code=resp.status_code)
     result["download_time"] = resp.elapsed.total_seconds()
 
-    if zip:
+    if resp.content[:2] == b"PK":  # is_zip
         # zipの展開
         with open(f"/tmp/{filename}.zip", "wb") as f:
             f.write(resp.content)
@@ -85,7 +85,8 @@ def generate_font_svg(
     text: str,
     size: int,
     out: str,
-    color: str = "black"
+    color: str = "black",
+    bg_color: str = "white"
 ) -> None:
 
     font = TTFont(fontpath)
@@ -127,6 +128,7 @@ def generate_font_svg(
     result = dedent(
         f"""
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0, 0, {int(x+5)}, {font_height+15}">
+            <rect width="100%" height="100%" fill="{bg_color}"/>
             {"".join(g_list)}
         </svg>"""
     )
