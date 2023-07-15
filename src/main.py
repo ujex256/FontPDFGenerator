@@ -42,8 +42,10 @@ async def add_process_time(req, call_next):
         if DEBUG:
             raise e
         else:
-            content = {"msg": traceback.format_exception_only((type(e), e))[0][:-2],
-                       "id": "UNKNOWN_ERROR"}
+            content = {
+                "msg": traceback.format_exception_only((type(e), e))[0][:-2],
+                "id": "UNKNOWN_ERROR",
+            }
             resp = JSONResponse(content, status.HTTP_500_INTERNAL_SERVER_ERROR)
     process = time.perf_counter() - s
     resp.headers["X-Process-Time"] = str(process)
@@ -111,8 +113,10 @@ def _generate_font_pdf(
         id = "WEIGHT_NOT_FOUND"
     finally:
         if code:
-            return JSONResponse({"msg": msg, "returned_status_code": code, "id": id},
-                                status.HTTP_400_BAD_REQUEST)
+            return JSONResponse(
+                {"msg": msg, "returned_status_code": code, "id": id},
+                status.HTTP_400_BAD_REQUEST,
+            )
         elif id is not None:
             return JSONResponse({"msg": msg, "id": id}, status.HTTP_400_BAD_REQUEST)
 
@@ -133,9 +137,10 @@ def _generate_font_pdf(
     elif filetype == "png":
         d = im_conv.svg2png(svg_path, dpi)
     decoded = base64.b64encode(d)
-    return FontPDFResponse(font_url=fontname, weight=weight,
-                           base64=decoded,
-                           color=color, dl_time=dl_time)
+    return FontPDFResponse(
+        font_url=fontname, weight=weight, base64=decoded,
+        color=color, dl_time=dl_time
+    )
 
 
 @app.get("/debug/ls")
@@ -152,4 +157,5 @@ def _file_tree(path: str = "."):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("main:app", port=8000, reload=True)
