@@ -91,6 +91,9 @@ def _generate_font_pdf(
         id = None
         code = None
         font_path = utils.download_font(fontname, weight)
+    except exp.InvalidUrlError:
+        msg = "invalid url"
+        id = "INVALID_URL"
     except exp.DownloadFailed as e:
         msg = "Download failed."
         id = "DOWNLOAD_FAILED"

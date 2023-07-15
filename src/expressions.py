@@ -8,3 +8,7 @@ class FontNotFoundError(Exception):
 
 class DownloadFailed(Exception):
     pass
+
+
+class InvalidUrlError(Exception):
+    pass

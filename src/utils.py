@@ -43,7 +43,7 @@ def download_font(url: str, weight: Optional[str] = None):
     if is_url(url):
         resp = requests.get(url)
     else:
-        raise expressions.DownloadFailed("invaild url")
+        raise expressions.InvalidUrlError()
     if not resp.ok:
         raise expressions.DownloadFailed("download failed.", resp.status_code)
     result["download_time"] = resp.elapsed.total_seconds()
