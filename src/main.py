@@ -17,6 +17,7 @@ import colors
 
 
 app = FastAPI()
+DEBUG = True
 
 
 class ColorPDFResponse(BaseModel):
@@ -39,7 +40,12 @@ async def add_process_time(req, call_next):
     try:
         resp = await call_next(req)
     except Exception as e:
-        raise e
+        if DEBUG:
+            raise e
+        else:
+            content = {"msg": traceback.format_exception_only((type(e), e))[0][:-2],
+                       "id": "UNKNOWN_ERROR"}
+            resp = JSONResponse(content, status.HTTP_500_INTERNAL_SERVER_ERROR)
     process = time.perf_counter() - s
     resp.headers["X-Process-Time"] = str(process)
     return resp
@@ -124,18 +130,11 @@ def _generate_font_pdf(
     svg_path = f"/tmp/{file_name}.svg"
     utils.generate_font_svg(font_path, text, 32, svg_path, color, bg_color=bg_color)
 
-    try:
-        if filetype == "pdf":
-            d = im_conv.svg2pdf(svg_path)
-        elif filetype == "png":
-            d = im_conv.svg2png(svg_path, dpi)
-        decoded = base64.b64encode(d)
-    except Exception as e:
-        raise e
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"msg": traceback.format_exception_only((type(e), e))[0][:-2]},
-        )
+    if filetype == "pdf":
+        d = im_conv.svg2pdf(svg_path)
+    elif filetype == "png":
+        d = im_conv.svg2png(svg_path, dpi)
+    decoded = base64.b64encode(d)
     return FontPDFResponse(font_url=fontname, weight=weight,
                            base64=decoded,
                            color=color, dl_time=dl_time)
