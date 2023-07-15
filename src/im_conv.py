@@ -2,11 +2,11 @@ from reportlab.graphics import renderPDF, renderPM
 from svglib.svglib import svg2rlg
 
 
-def svg2pdf(filepath: str, out: str) -> None:
+def svg2pdf(filepath: str) -> None:
     draw_data = svg2rlg(filepath)
-    renderPDF.drawToFile(draw_data, out)
+    return renderPDF.drawToString(draw_data)
 
 
-def svg2png(filepath: str, out: str, dpi: int) -> None:
+def svg2png(filepath: str, dpi: int) -> None:
     draw_data = svg2rlg(filepath)
-    renderPM.drawToFile(draw_data, out, fmt="PNG", dpi=dpi)
+    return renderPM.drawToString(draw_data, fmt="PNG", dpi=dpi)

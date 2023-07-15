@@ -1,6 +1,7 @@
 import traceback
 import uuid
 import time
+import base64
 from os import listdir
 from os.path import getsize
 from typing import Optional
@@ -121,14 +122,14 @@ def _generate_font_pdf(
 
     file_name = uuid.uuid4()
     svg_path = f"/tmp/{file_name}.svg"
-    export_path = f"/tmp/{file_name}.{filetype}"
     utils.generate_font_svg(font_path, text, 32, svg_path, color, bg_color=bg_color)
 
     try:
         if filetype == "pdf":
-            im_conv.svg2pdf(svg_path, export_path)
+            d = im_conv.svg2pdf(svg_path)
         elif filetype == "png":
-            im_conv.svg2png(svg_path, export_path, dpi)
+            d = im_conv.svg2png(svg_path, dpi)
+        decoded = base64.b64encode(d)
     except Exception as e:
         raise e
         return JSONResponse(
@@ -136,7 +137,7 @@ def _generate_font_pdf(
             content={"msg": traceback.format_exception_only((type(e), e))[0][:-2]},
         )
     return FontPDFResponse(font_url=fontname, weight=weight,
-                           base64=utils.get_base64(export_path),
+                           base64=decoded,
                            color=color, dl_time=dl_time)
 
 
