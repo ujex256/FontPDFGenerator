@@ -60,14 +60,12 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
             content={"msg": "Please specify a valid color."},
         )
 
-    file_name = uuid.uuid4()
-    svg_path = f"/tmp/{file_name}.svg"
-    utils.generate_color_svg(size=[width, height], color=color, out=svg_path)
+    svg = utils.generate_color_svg(size=[width, height], color=color)
 
     if filetype == "pdf":
-        d = im_conv.svg2pdf(svg_path)
+        d = im_conv.svg2pdf(svg)
     elif filetype == "png":
-        d = im_conv.svg2png(svg_path, 72)
+        d = im_conv.svg2png(svg, 72)
     decoded = base64.b64encode(d)
     return ColorPDFResponse(color=color, base64=decoded)
 
@@ -127,14 +125,12 @@ def _generate_font_pdf(
         response["selected_weight"] = font_path[0]
         font_path = font_path[0]
 
-    file_name = uuid.uuid4()
-    svg_path = f"/tmp/{file_name}.svg"
-    utils.generate_font_svg(font_path, text, 32, svg_path, color, bg_color=bg_color)
+    svg = utils.generate_font_svg(font_path, text, 32, color, bg_color=bg_color)
 
     if filetype == "pdf":
-        d = im_conv.svg2pdf(svg_path)
+        d = im_conv.svg2pdf(svg)
     elif filetype == "png":
-        d = im_conv.svg2png(svg_path, dpi)
+        d = im_conv.svg2png(svg, dpi)
     decoded = base64.b64encode(d)
     return FontPDFResponse(
         font_url=fontname, weight=weight, base64=decoded,

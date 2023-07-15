@@ -14,15 +14,14 @@ from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.ttLib import TTFont
 
 
-def generate_color_svg(size: list, color: str, out: str) -> None:
+def generate_color_svg(size: list, color: str) -> None:
     base_svg = dedent(
         f"""
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size[0]} {size[1]}">
             <rect width="{size[0]}" height="{size[1]}" fill="{color}" />
         </svg>"""
     )
-    with open(out, "w", encoding="utf8") as file:
-        file.write(base_svg)
+    return base_svg
 
 
 def get_base64(path: str):
@@ -83,7 +82,6 @@ def generate_font_svg(
     fontpath: str,
     text: str,
     size: int,
-    out: str,
     color: str = "black",
     bg_color: str = "white"
 ) -> None:
@@ -131,8 +129,7 @@ def generate_font_svg(
             {"".join(g_list)}
         </svg>"""
     )
-    with open(out, "w") as f:
-        f.write(result)
+    return result
 
 
 def is_url(d: str) -> bool:
