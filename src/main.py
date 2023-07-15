@@ -89,10 +89,12 @@ def _generate_font_pdf(
 
     try:
         id = None
+        code = None
         font_path = utils.download_font(fontname, weight)
-    except exp.DownloadFailed:
+    except exp.DownloadFailed as e:
         msg = "Download failed."
         id = "DOWNLOAD_FAILED"
+        code = e.args[1]
     except exp.FontNotFoundError:
         msg = "Font is not found."
         id = "FONT_NOT_FOUND"
@@ -100,7 +102,10 @@ def _generate_font_pdf(
         msg = "Weight is no found."
         id = "WEIGHT_NOT_FOUND"
     finally:
-        if id is not None:
+        if code:
+            return JSONResponse({"msg": msg, "returned_status_code": code, "id": id},
+                                status.HTTP_400_BAD_REQUEST)
+        elif id is not None:
             return JSONResponse({"msg": msg, "id": id}, status.HTTP_400_BAD_REQUEST)
 
     dl_time = font_path["download_time"]

@@ -45,8 +45,7 @@ def download_font(url: str, weight: Optional[str] = None):
     else:
         raise expressions.DownloadFailed("invaild url")
     if not resp.ok:
-        raise expressions.DownloadFailed("download failed.",
-                                         status_code=resp.status_code)
+        raise expressions.DownloadFailed("download failed.", resp.status_code)
     result["download_time"] = resp.elapsed.total_seconds()
 
     if resp.content[:2] == b"PK":  # is_zip

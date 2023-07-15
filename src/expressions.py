@@ -7,4 +7,4 @@ class FontNotFoundError(Exception):
 
 
 class DownloadFailed(Exception):
-    status_code: int
+    pass
