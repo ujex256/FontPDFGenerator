@@ -23,7 +23,6 @@ DEBUG = True
 class ColorPDFResponse(BaseModel):
     color: str
     base64: str
-    size: int
 
 
 class FontPDFResponse(BaseModel):
@@ -62,15 +61,14 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
 
     file_name = uuid.uuid4()
     svg_path = f"/tmp/{file_name}.svg"
-    export_path = f"/tmp/{file_name}.{filetype}"
     utils.generate_color_svg(size=[width, height], color=color, out=svg_path)
 
     if filetype == "pdf":
-        im_conv.svg2pdf(svg_path, export_path)
+        d = im_conv.svg2pdf(svg_path)
     elif filetype == "png":
-        im_conv.svg2png(svg_path, export_path, 50)
-    return ColorPDFResponse(color=color, base64=utils.get_base64(export_path),
-                            size=getsize(export_path))
+        d = im_conv.svg2png(svg_path, 72)
+    decoded = base64.b64encode(d)
+    return ColorPDFResponse(color=color, base64=decoded)
 
 
 @app.get("/font/{filetype}", status_code=status.HTTP_200_OK)
