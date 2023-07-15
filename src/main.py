@@ -3,7 +3,6 @@ import uuid
 import time
 import base64
 from os import listdir
-from os.path import getsize
 from typing import Optional
 
 from fastapi import FastAPI, status
