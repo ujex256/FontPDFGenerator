@@ -90,6 +90,11 @@ def _generate_font_pdf(
     filetype = filetype.lower()
     if not utils.is_url(fontname):
         fontname = f"https://fonts.google.com/download?family={fontname}"
+    if not all(colors.is_color(i) for i in [color, bg_color]):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"msg": "Please specify a valid color."},
+        )
 
     try:
         id = None
