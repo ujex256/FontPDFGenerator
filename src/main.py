@@ -1,5 +1,4 @@
 import traceback
-import uuid
 import time
 import base64
 from os import listdir
@@ -130,12 +129,18 @@ def _generate_font_pdf(
         response["selected_weight"] = font_path[0]
         font_path = font_path[0]
 
+    if bg_color == "none" and filetype != "png":
+        bg_color = "white"
+
     svg = utils.generate_font_svg(font_path, text, 32, color, bg_color=bg_color)
 
     if filetype == "pdf":
         d = im_conv.svg2pdf(svg)
     elif filetype == "png":
         d = im_conv.svg2png(svg, dpi)
+        if bg_color == "none":
+            img = im_conv.bytes2img(d)
+            d = im_conv.add_alpha_channel(img)
     decoded = base64.b64encode(d)
     return FontPDFResponse(
         font_url=fontname, weight=weight, base64=decoded,
