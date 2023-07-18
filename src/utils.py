@@ -134,21 +134,3 @@ def generate_font_svg(
 
 def is_url(d: str) -> bool:
     return bool(re.match(r"https?://[\w!?/+\-_~;.,*&@#$%()'[\]]+", d))
-
-
-if __name__ == "__main__":
-    import time
-    start = time.time()
-    path = download_font("http://ymnk-design.com/wordpress/wp-content/themes/ymnkweb2018/font/fontdownload/pugnomincho_mini.zip", True)  # キャッシュされているならどちらでもok
-    print(time.time()-start)
-    if isinstance(path, dict):
-        print(path["download_time"])
-        path = path["path"]
-        if isinstance(path, list):
-            print("path:", path[0])
-            generate_font_svg(path[0], "こんにちわ~Aa!'@:;", 32, "out.svg")
-        else:
-            print("path:", path)
-            generate_font_svg(path, "こんにちわ~Aa!'@:;", 32, "out.svg")
-    else:
-        generate_font_svg(path, "こんにちわ~Aa!'@:;", 32, "out.svg")
