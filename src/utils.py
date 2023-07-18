@@ -111,25 +111,22 @@ def generate_font_svg(
 
         width = glyph.width
         outline = svg_path_pen.getCommands()
-        formatted_d = "".join([f" {c} " if c.isalpha() and i != 0 else c for i, c in enumerate(outline)])
 
         content = f"""
             <g transform="translate({int(x)}, {font_height}) scale(1, -1) scale({scale})">
-                <path d="{formatted_d}" fill="{color}"/>
+                <path d="{outline}" fill="{color}"/>
             </g>"""
         g_list.append(content)
         text_x += width
         x = text_x * scale
 
     font.close()
-    result = dedent(
-        f"""
+    result = f"""
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0, 0, {int(x+5)}, {font_height+15}">
             <rect width="100%" height="100%" fill="{bg_color}"/>
             {"".join(g_list)}
         </svg>"""
-    )
-    return result
+    return dedent(result)
 
 
 def is_url(d: str) -> bool:
