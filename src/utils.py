@@ -99,7 +99,7 @@ def generate_font_svg(
         try:
             glyph_name = cmap[ord(char)]
         except KeyError:
-            glyph_name = cmap[33]
+            glyph_name = cmap[63]
         return glyph_set[glyph_name]
 
     g_list = deque()  # 一応高速化?
