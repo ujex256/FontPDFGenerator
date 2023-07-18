@@ -51,7 +51,7 @@ async def add_process_time(req, call_next):
 
 
 @app.get("/color/{filetype}", status_code=status.HTTP_200_OK)
-def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
+def generate_color_pdf(filetype: str, width: int, height: int, color: str):
     filetype = filetype.lower()
     if not colors.is_color(color):
         return JSONResponse(
@@ -70,7 +70,7 @@ def _generate_color_pdf(filetype: str, width: int, height: int, color: str):
 
 
 @app.get("/font/{filetype}", status_code=status.HTTP_200_OK)
-def _generate_font_pdf(
+def generate_font_pdf(
     filetype: str,
     fontname: str,
     text: str,
@@ -79,13 +79,6 @@ def _generate_font_pdf(
     weight: Optional[str] = None,
     dpi: int = 72,
 ):
-    response = {
-        "font": fontname,
-        "base64": "",
-        "color": color,
-        "weight": weight,
-        "dl_time": None,
-    }
     filetype = filetype.lower()
     if not utils.is_url(fontname):
         fontname = f"https://fonts.google.com/download?family={fontname}"
@@ -125,14 +118,12 @@ def _generate_font_pdf(
     if isinstance(font_path, dict):
         font_path = font_path["path"]
     if isinstance(font_path, list):
-        response["weight_list"] = font_path
-        response["selected_weight"] = font_path[0]
         font_path = font_path[0]
 
     if bg_color == "none" and filetype != "png":
         bg_color = "white"
 
-    svg = utils.generate_font_svg(font_path, text, 32, color, bg_color=bg_color)
+    svg = utils.generate_font_svg(font_path, text, 32, color, bg_color)
 
     if filetype == "pdf":
         d = im_conv.svg2pdf(svg)
@@ -150,7 +141,7 @@ def _generate_font_pdf(
 
 @app.get("/debug/ls")
 @app.get("/debug/ls/{path}")
-def _file_tree(path: str = "."):
+def file_tree(path: str = "."):
     try:
         return {"result": listdir(path)}
     except FileNotFoundError:
