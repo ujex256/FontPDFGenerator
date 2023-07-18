@@ -136,17 +136,6 @@ def is_url(d: str) -> bool:
     return bool(re.match(r"https?://[\w!?/+\-_~;.,*&@#$%()'[\]]+", d))
 
 
-def return_replace(url):
-    """デバッグ用"""
-    url = url.split("?")[0]
-    url = url.replace(".zip", "").split("/")
-    KEYS = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"]
-    d = dict.fromkeys(KEYS, None)
-    d = str.maketrans(d)
-    url = (url[-2] + url[-1]).translate(d)
-    return url
-
-
 if __name__ == "__main__":
     import time
     start = time.time()
