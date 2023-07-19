@@ -20,6 +20,12 @@ def bytes2img(img: bytes):
     return Image.open(BytesIO(img))
 
 
+def img2bytes(img: PngImageFile):
+    img_bytes = BytesIO()
+    img.save(img_bytes, format="PNG")
+    return BytesIO().getvalue()
+
+
 def add_alpha_channel(img: PngImageFile):
     _img = img.copy().convert("RGBA")
     data = _img.getdata()
@@ -31,8 +37,4 @@ def add_alpha_channel(img: PngImageFile):
         else:
             new.append(i)
     _img.putdata(new)
-
-    img_bytes = BytesIO()
-    _img.save(img_bytes, format="PNG")
-    img_bytes = img_bytes.getvalue()
-    return img_bytes
+    return _img

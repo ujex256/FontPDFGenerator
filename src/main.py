@@ -130,8 +130,8 @@ def generate_font_pdf(
     elif filetype == "png":
         d = im_conv.svg2png(svg, dpi)
         if bg_color == "none":
-            img = im_conv.bytes2img(d)
-            d = im_conv.add_alpha_channel(img)
+            img = im_conv.add_alpha_channel(im_conv.bytes2img(d))
+            d = im_conv.img2bytes(img)
     decoded = base64.b64encode(d)
     return FontPDFResponse(
         font_url=fontname, weight=weight, base64=decoded,
