@@ -1,6 +1,7 @@
 import traceback
 import time
 import base64
+from io import BytesIO
 from os import listdir
 from typing import Optional
 
@@ -117,13 +118,11 @@ def generate_font_pdf(
     dl_time = font_path["download_time"]
     if isinstance(font_path, dict):
         font_path = font_path["path"]
-    if isinstance(font_path, list):
-        font_path = font_path[0]
 
     if bg_color == "none" and filetype != "png":
         bg_color = "white"
 
-    svg = utils.generate_font_svg(font_path, text, 32, color, bg_color)
+    svg = utils.generate_font_svg(BytesIO(font_path), text, 32, color, bg_color)
 
     if filetype == "pdf":
         d = im_conv.svg2pdf(svg)

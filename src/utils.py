@@ -1,7 +1,6 @@
 import base64
-import pathlib
-import shutil
-import uuid
+import zipfile
+import io
 import re
 from collections import deque
 from os import sep
@@ -38,7 +37,6 @@ def download_font(url: str, weight: Optional[str] = None):
         weight = weight.lower()
 
     # ダウンロード
-    filename = str(uuid.uuid4())
     if is_url(url):
         resp = requests.get(url)
     else:
@@ -49,18 +47,15 @@ def download_font(url: str, weight: Optional[str] = None):
 
     if resp.content[:2] == b"PK":  # is_zip
         # zipの展開
-        with open(f"/tmp/{filename}.zip", "wb") as f:
-            f.write(resp.content)
-        unzipped_dir = pathlib.Path("/tmp", filename)
-        shutil.unpack_archive(f"/tmp/{filename}.zip", str(unzipped_dir), "zip")
+        z = zipfile.ZipFile(io.BytesIO(resp.content))
 
-        # ディレクトリからファイルのパスを選ぶ
-        candidates = list(unzipped_dir.rglob("*.[ot]tf"))
+        REGEX = r".*\.(ot|tt)f"
+        candidates = [i for i in z.namelist() if re.match(REGEX, i)]
         if not candidates:
             raise expressions.FontNotFoundError("Font not found")
 
         if weight is not None:
-            candidates = [i for i in candidates if weight in i.name.lower()]
+            candidates = [i for i in candidates if weight in i.lower()]
             if len(candidates) == 0:
                 raise expressions.WeightNotFoundError("weight not found.")
 
@@ -70,11 +65,10 @@ def download_font(url: str, weight: Optional[str] = None):
         if len(top_level_files) > 1:
             result["path"] = list(map(str, top_level_files))
         else:
-            result["path"] = str(top_level_files[0])
+            result["path"] = z.open(top_level_files[0], "r").read()
+        z.close()
     else:
-        with open(f"/tmp/{filename}.ttf", "wb") as f:
-            f.write(resp.content)
-        result["path"] = f"/tmp/{filename}.ttf"
+        result["path"] = resp.content
     return result
 
 
