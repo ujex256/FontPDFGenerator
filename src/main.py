@@ -149,7 +149,7 @@ def file_tree(path: str = "."):
     except FileNotFoundError:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"msg": "path is not found."},
+            content={"msg": "path is not found.", "id": "PATH_NOT_FOUND"},
         )
 
 
