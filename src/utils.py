@@ -62,10 +62,7 @@ def download_font(url: str, weight: Optional[str] = None):
         levels = [str(i).count(sep) for i in candidates]
         top_level = min(levels)
         top_level_files = [candidates[i] for i, l in enumerate(levels) if l == top_level]
-        if len(top_level_files) > 1:
-            result["path"] = list(map(str, top_level_files))
-        else:
-            result["path"] = z.open(top_level_files[0], "r").read()
+        result["path"] = z.open(top_level_files[0], "r").read()
         z.close()
     else:
         result["path"] = resp.content
