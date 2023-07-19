@@ -1,6 +1,7 @@
 import traceback
 import time
 import base64
+import enum
 from io import BytesIO
 from os import listdir
 from typing import Optional
@@ -30,6 +31,11 @@ class FontPDFResponse(BaseModel):
     base64: str
     color: str
     dl_time: float
+
+
+class FileType(str, enum.Enum):
+    PDF = "pdf"
+    PNG = "png"
 
 
 @app.middleware("http")
@@ -72,7 +78,7 @@ def generate_color_pdf(filetype: str, width: int, height: int, color: str):
 
 @app.get("/font/{filetype}", status_code=status.HTTP_200_OK)
 def generate_font_pdf(
-    filetype: str,
+    filetype: FileType,
     fontname: str,
     text: str,
     color: str = "black",
