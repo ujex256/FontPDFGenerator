@@ -42,7 +42,7 @@ async def add_process_time(req, call_next):
             raise e
         else:
             content = {
-                "msg": traceback.format_exception_only((type(e), e))[0][:-2],
+                "msg": traceback.format_exception_only(type(e), e)[0],
                 "id": "UNKNOWN_ERROR",
             }
             resp = JSONResponse(content, status.HTTP_500_INTERNAL_SERVER_ERROR)
