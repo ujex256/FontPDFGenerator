@@ -30,7 +30,7 @@ def get_base64(path: str):
 
 def download_font(url: str, weight: Optional[str] = None):
     result = {
-        "path": "",
+        "font": None,
         "download_time": 0
     }
     if weight is not None:
@@ -62,10 +62,10 @@ def download_font(url: str, weight: Optional[str] = None):
         levels = [str(i).count(sep) for i in candidates]
         top_level = min(levels)
         top_level_files = [candidates[i] for i, l in enumerate(levels) if l == top_level]
-        result["path"] = z.open(top_level_files[0], "r").read()
+        result["font"] = z.open(top_level_files[0], "r").read()
         z.close()
     else:
-        result["path"] = resp.content
+        result["font"] = resp.content
     return result
 
 

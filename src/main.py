@@ -98,7 +98,7 @@ def generate_font_pdf(
     try:
         id = None
         code = None
-        font_path = utils.download_font(fontname, weight)
+        font = utils.download_font(fontname, weight)
     except exp.InvalidUrlError:
         msg = "invalid url"
         id = "INVALID_URL"
@@ -121,10 +121,7 @@ def generate_font_pdf(
         elif id is not None:
             return JSONResponse({"msg": msg, "id": id}, status.HTTP_400_BAD_REQUEST)
 
-    dl_time = font_path["download_time"]
-    if isinstance(font_path, dict):
-        font_path = font_path["path"]
-
+    font_path = font["font"]
     if bg_color == "none" and filetype != "png":
         bg_color = "white"
 
@@ -140,7 +137,7 @@ def generate_font_pdf(
     decoded = base64.b64encode(d)
     return FontPDFResponse(
         font_url=fontname, weight=weight, base64=decoded,
-        color=color, dl_time=dl_time
+        color=color, dl_time=font["download_time"]
     )
 
 
