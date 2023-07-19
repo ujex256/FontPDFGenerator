@@ -90,9 +90,9 @@ def generate_font_svg(
     glyph_set = font.getGlyphSet()
     cmap = font.getBestCmap()
     hhea = font["hhea"]
-    scale = size / 750  # default: 750pt
+    scale = round(size / 750, 3)  # default: 750pt
     font_height = int((hhea.ascender - hhea.descender + hhea.lineGap) * scale)
-    text_x = 0
+    text_width = 0
     x = 0
 
     def get_glyph(glyph_set, cmap, char):
@@ -109,16 +109,14 @@ def generate_font_svg(
         svg_path_pen = SVGPathPen(glyph_set)
         glyph.draw(svg_path_pen)
 
-        width = glyph.width
         outline = svg_path_pen.getCommands()
-
         content = f"""
             <g transform="translate({int(x)}, {font_height}) scale(1, -1) scale({scale})">
                 <path d="{outline}" fill="{color}"/>
             </g>"""
         g_list.append(content)
-        text_x += width
-        x = text_x * scale
+        text_width += glyph.width
+        x = text_width * scale
 
     font.close()
     result = f"""
