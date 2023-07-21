@@ -33,7 +33,7 @@ class FontPDFResponse(BaseModel):
     dl_time: float
 
 
-class FileType(str, enum.Enum):
+class FileTypes(str, enum.Enum):
     PDF = "pdf"
     PNG = "png"
     SVG = "svg"
@@ -60,7 +60,7 @@ async def add_process_time(req, call_next):
 
 
 @app.get("/color/{filetype}", status_code=status.HTTP_200_OK)
-def generate_color_pdf(filetype: FileType, width: int, height: int, color: str):
+def generate_color_pdf(filetype: FileTypes, width: int, height: int, color: str):
     filetype = filetype.lower()
     if not colors.is_color(color):
         return JSONResponse(
@@ -80,7 +80,7 @@ def generate_color_pdf(filetype: FileType, width: int, height: int, color: str):
 
 @app.get("/font/{filetype}", status_code=status.HTTP_200_OK)
 def generate_font_pdf(
-    filetype: FileType,
+    filetype: FileTypes,
     font_url: str,
     text: str,
     color: str = "black",
