@@ -60,7 +60,7 @@ async def add_process_time(req, call_next):
 
 
 @app.get("/color/{filetype}", status_code=status.HTTP_200_OK)
-def generate_color_pdf(filetype: str, width: int, height: int, color: str):
+def generate_color_pdf(filetype: FileType, width: int, height: int, color: str):
     filetype = filetype.lower()
     if not colors.is_color(color):
         return JSONResponse(
