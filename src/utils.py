@@ -13,11 +13,11 @@ from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.ttLib import TTFont
 
 
-def generate_color_svg(size: list, color: str) -> None:
+def generate_color_svg(width: int, height: int, color: str) -> None:
     base_svg = dedent(
         f"""
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {size[0]} {size[1]}">
-            <rect width="{size[0]}" height="{size[1]}" fill="{color}" />
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}">
+            <rect width="{width}" height="{height}" fill="{color}" />
         </svg>"""
     )
     return base_svg

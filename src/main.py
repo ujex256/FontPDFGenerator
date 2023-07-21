@@ -68,7 +68,7 @@ def generate_color_pdf(filetype: str, width: int, height: int, color: str):
             content={"msg": "Please specify a valid color."},
         )
 
-    svg = utils.generate_color_svg(size=[width, height], color=color)
+    svg = utils.generate_color_svg(width, height, color)
 
     if filetype == "pdf":
         d = im_conv.svg2pdf(svg)
