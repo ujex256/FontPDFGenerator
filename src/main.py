@@ -36,6 +36,8 @@ class FontPDFResponse(BaseModel):
 class FileType(str, enum.Enum):
     PDF = "pdf"
     PNG = "png"
+    SVG = "svg"
+    JPEG = "jpeg"
 
 
 @app.middleware("http")
@@ -79,7 +81,7 @@ def generate_color_pdf(filetype: str, width: int, height: int, color: str):
 @app.get("/font/{filetype}", status_code=status.HTTP_200_OK)
 def generate_font_pdf(
     filetype: FileType,
-    fontname: str,
+    font_url: str,
     text: str,
     color: str = "black",
     bg_color: str = "white",
@@ -87,8 +89,8 @@ def generate_font_pdf(
     dpi: int = 72,
 ):
     filetype = filetype.lower()
-    if not utils.is_url(fontname):
-        fontname = f"https://fonts.google.com/download?family={fontname}"
+    if not utils.is_url(font_url):
+        font_url = f"https://fonts.google.com/download?family={font_url}"
     if not all(colors.is_color(i) for i in [color, bg_color]):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -98,7 +100,7 @@ def generate_font_pdf(
     try:
         id = None
         code = None
-        font = utils.download_font(fontname, weight)
+        font = utils.download_font(font_url, weight)
     except exp.InvalidUrlError:
         msg = "invalid url"
         id = "INVALID_URL"
@@ -136,7 +138,7 @@ def generate_font_pdf(
             d = im_conv.img2bytes(img)
     decoded = base64.b64encode(d)
     return FontPDFResponse(
-        font_url=fontname, weight=weight, base64=decoded,
+        font_url=font_url, weight=weight, base64=decoded,
         color=color, dl_time=font["download_time"]
     )
 
