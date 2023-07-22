@@ -13,7 +13,7 @@ from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.ttLib import TTFont
 
 
-def generate_color_svg(width: int, height: int, color: str) -> None:
+def generate_color_svg(width: int, height: int, color: str) -> str:
     base_svg = dedent(
         f"""
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}">
@@ -23,12 +23,12 @@ def generate_color_svg(width: int, height: int, color: str) -> None:
     return base_svg
 
 
-def get_base64(path: str):
+def get_base64(path: str) -> str:
     with open(path, "rb") as file:
         return base64.b64encode(file.read())
 
 
-def download_font(url: str, weight: Optional[str] = None):
+def download_font(url: str, weight: Optional[str] = None) -> dict[bytes, float]:
     result = {
         "font": None,
         "download_time": 0
@@ -75,7 +75,7 @@ def generate_font_svg(
     size: int,
     color: str = "black",
     bg_color: str = "white"
-) -> None:
+) -> str:
 
     font = TTFont(fontpath)
     glyph_set = font.getGlyphSet()
