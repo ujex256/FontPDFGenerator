@@ -50,7 +50,7 @@ def download_font(url: str, weight: Optional[str] = None) -> dict[bytes, float]:
         z = zipfile.ZipFile(io.BytesIO(resp.content))
 
         REGEX = r".*\.(ot|tt)f"
-        candidates = [i for i in z.namelist() if re.match(REGEX, i)]
+        candidates = [i for i in z.namelist() if re.match(REGEX, i.lower())]
         if not candidates:
             raise expressions.FontNotFoundError("Font not found")
 
