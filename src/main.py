@@ -28,7 +28,8 @@ class ColorPDFResponse(BaseModel):
 class FontPDFResponse(BaseModel):
     font_url: str
     weight: str | None = None
-    base64: str
+    base64: str | None = None
+    svg: str | None = None
     color: str
     dl_time: float
 
@@ -129,6 +130,7 @@ def generate_font_pdf(
 
     svg = utils.generate_font_svg(BytesIO(font_path), text, 32, color, bg_color)
 
+    d = "".encode()
     if filetype == "pdf":
         d = im_conv.svg2pdf(svg)
     elif filetype == "png":
@@ -137,6 +139,8 @@ def generate_font_pdf(
             img = im_conv.add_alpha_channel(im_conv.bytes2img(d))
             d = im_conv.img2bytes(img)
     decoded = base64.b64encode(d)
+    if filetype == "svg":
+        decoded = svg.replace("\n", "").replace(" ", "")
     return FontPDFResponse(
         font_url=font_url, weight=weight, base64=decoded,
         color=color, dl_time=font["download_time"]
@@ -146,6 +150,8 @@ def generate_font_pdf(
 @app.get("/debug/ls")
 @app.get("/debug/ls/{path}")
 def file_tree(path: str = "."):
+    if not DEBUG:
+        return JSONResponse({"msg": "403 forbidden"}, status_code=status.HTTP_403_FORBIDDEN)
     try:
         return {"result": listdir(path)}
     except FileNotFoundError:
